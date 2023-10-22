@@ -24,7 +24,7 @@ async function obtenerYMostrarDatos(i: number) {
 
 async function cargarDatos() {
     let lista_actual: any;
-    if (tipos_filtro.length == 0) {
+    if (tipos_filtro.length == 0 && buscar.value == "") {
         lista_actual = await Promise.all(lista_pokemon);
     } else {
         lista_actual = await Promise.all(lista_filtros);
@@ -59,58 +59,25 @@ function pasarLista(valor: number) {
 async function filtrarPokemon() {
     let lista_actual = await Promise.all(lista_pokemon);
     lista_filtros = [];
-    
-    for (let i: number = 0; i < lista_pokemon.length; i++) {
-        for (let j: number = 0; j < tipos_filtro.length; j++) {
-            if (lista_actual[i].types[0].type.name == tipos_filtro[j] || (lista_actual[i].types[1] && lista_actual[i].types[1].type.name == tipos_filtro[j])) {
+
+    if (tipos_filtro.length == 0) {
+        for (let i: number = 0; i < lista_actual.length; i++) {
+            if (lista_actual[i].name.startsWith(buscar.value)) {
                 lista_filtros.push(lista_actual[i]);
+            }
+        }
+    } else {
+        for (let i: number = 0; i < lista_pokemon.length; i++) {
+            for (let j: number = 0; j < tipos_filtro.length; j++) {
+                if (lista_actual[i].types[0].type.name == tipos_filtro[j] || (lista_actual[i].types[1] && lista_actual[i].types[1].type.name == tipos_filtro[j])) {
+                    if (buscar.value == "" || lista_actual[i].name.startsWith(buscar.value)) {
+                        lista_filtros.push(lista_actual[i]);
+                    }
+                }
             }
         }
     }
     
-    cargarDatos();
-}
-
-function calcularDistancia(a: any, b: any) {
-    if (a.length === 0) return b.length;
-    if (b.length === 0) return a.length;
-
-    const matrix = [];
-    for (let i = 0; i <= b.length; i++) {
-        matrix[i] = [i];
-    }
-
-    for (let i = 0; i <= a.length; i++) {
-        matrix[0][i] = i;
-    }
-
-    for (let i = 1; i <= b.length; i++) {
-        for (let j = 1; j <= a.length; j++) {
-            const cost = a[j - 1] === b[i - 1] ? 0 : 1;
-            matrix[i][j] = Math.min(
-                matrix[i - 1][j] + 1,
-                matrix[i][j - 1] + 1,
-                matrix[i - 1][j - 1] + cost
-            );
-        }
-    }
-
-    return matrix[b.length][a.length];
-}
-
-async function buscarPokemon() {
-    let lista_actual = await Promise.all(lista_filtros);
-    let pokemon_similares = lista_actual.filter((pokemon_actual) => {
-        let distancia = calcularDistancia(buscar.value.toLowerCase(), pokemon_actual.name.toLowerCase());
-        return distancia <= 2;
-    });
-
-    lista_filtros = pokemon_similares;
-    if (pokemon_similares.length > 0) {
-        alert(pokemon_similares[0].name);
-    } else {
-        alert("no");
-    }
     cargarDatos();
 }
 
@@ -136,9 +103,10 @@ var siguiente: any = document.getElementById("siguiente");
 cargarDatos();
 
 //Eventos
-document.addEventListener("DOMContentLoaded", function () {
-    
+buscar.addEventListener("input", function () {
+    filtrarPokemon();
 });
+
 tipos.forEach((boton: any) => {
     boton.addEventListener("click", function () {
         if (boton.classList.contains("is-primary")) {
