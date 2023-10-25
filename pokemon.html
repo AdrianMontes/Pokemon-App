@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon App</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press+Start+2P">
+    <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="pokemon_info" class="nes-container is-rounded">
+        <div id="pokemon">
+            <h2 id="detalle_nombre">missingno</h2>
+            <img id="detalle_imagen" src="missingno.png">
+            <p id="detalle_numero">#???</p>
+            <button type="button" id="shiny_boton" class="nes-btn">
+                <img src="shiny.png" id="shiny_icono">
+            </button>
+        </div>
+        <div id="info">
+            <p>Base experience</p>
+            <p id="info_base_experience" class="right">0</p>
+            <p>Height</p>
+            <p id="info_height" class="right">10</p>
+            <p>Weight</p>
+            <p id="info_weight" class="right">3507</p>
+            <p>Base HP</p>
+            <p id="info_HP" class="right">36</p>
+            <p>Base attack</p>
+            <p id="info_attack" class="right">136</p>
+            <p>Base defense</p>
+            <p id="info_defense" class="right">0</p>
+            <p>Base special attack</p>
+            <p id="info_spattack" class="right">6</p>
+            <p>Base special defense</p>
+            <p id="info_spdefense" class="right">6</p>
+            <p>Base speed</p>
+            <p id="info_speed" class="right">29</p>
+            <p>Type 1</p>
+            <p id="info_type1" class="right">bird</p>
+            <p>Type 2</p>
+            <p id="info_type2" class="right">normal</p>
+        </div>
+    </div>
+    <br>
+    <a href="index.html">
+        <button type="button" id="go_back" class="nes-btn">Go back</button>
+    </a>
+    <script src="output/main.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let pokemon_cargado = localStorage.getItem("pokemon_cargado");
+            cargarPokemon(pokemon_cargado);
+
+            shiny.addEventListener("click", async function () {
+                let pokemon_actual = await devolverPokemon(pokemon_cargado);
+                if (shiny.classList.contains("is-primary")) {
+                    shiny.classList.remove("is-primary");
+                    pokemon_imagen.src = pokemon_actual.sprites.other["official-artwork"].front_default;
+                } else {
+                    shiny.classList.add("is-primary");
+                    pokemon_imagen.src = pokemon_actual.sprites.other["official-artwork"].front_shiny;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
